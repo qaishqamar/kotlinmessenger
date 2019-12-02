@@ -12,6 +12,7 @@ import android.util.Log
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_registration.*
 import java.util.*
@@ -95,9 +96,10 @@ class RegistrationActivity : AppCompatActivity() {
 
  }
     private fun saveUserToFirebase(profileImageUrl:String){
-        val uid=FirebaseAuth.getInstance().uid?:""
-        val user=User(uid,userName_et_register.text.toString(),profileImageUrl)
-        val ref=FirebaseDatabase.getInstance().getReference("/users/$uid")
+        val uid=FirebaseAuth.getInstance().currentUser?.uid
+        val user=User(uid.toString(),userName_et_register.text.toString(),profileImageUrl)
+       val ref=FirebaseDatabase.getInstance().getReference("/users/$uid")
+
         ref.setValue(user)
             .addOnSuccessListener {
                 Log.d("Main","user detail is uploaded")
@@ -108,11 +110,8 @@ class RegistrationActivity : AppCompatActivity() {
                 Toast.makeText(this,"users detail not uploaded",Toast.LENGTH_SHORT).show()
 
             }
-
-
     }
     class User( uid:String, username:String, profileImageUrl: String)
 
-
-
  }
+//FirebaseFirestore.getInstance().document("/users/$uid").set(user)"
