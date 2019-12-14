@@ -1,15 +1,15 @@
-package com.example.kotlinmessenger
+package com.example.kotlinmessenger.RegisterLogin
 
 import android.app.Activity
-import android.app.Instrumentation
 import android.content.Intent
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
+import com.example.kotlinmessenger.LatestmessegeActivity
+import com.example.kotlinmessenger.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
@@ -96,13 +96,21 @@ class RegistrationActivity : AppCompatActivity() {
 
  }
     private fun saveUserToFirebase(profileImageUrl:String){
-        val uid=FirebaseAuth.getInstance().currentUser?.uid
-        val user=User(uid.toString(),userName_et_register.text.toString(),profileImageUrl)
+        val uid=FirebaseAuth.getInstance().uid?:""
+        val user= User(
+            uid.toString(),
+            userName_et_register.text.toString(),
+            profileImageUrl
+        )
        val ref=FirebaseDatabase.getInstance().getReference("/users/$uid")
 
         ref.setValue(user)
             .addOnSuccessListener {
                 Log.d("Main","user detail is uploaded")
+                val intent=Intent(this,
+                    LatestmessegeActivity::class.java)
+                intent.flags=Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
             }
 
             .addOnFailureListener {
@@ -111,7 +119,8 @@ class RegistrationActivity : AppCompatActivity() {
 
             }
     }
-    class User( uid:String, username:String, profileImageUrl: String)
-
- }
+}
+class User( val uid:String,val username:String, val profileImageUrl: String){
+    constructor():this("","","")
+}
 //FirebaseFirestore.getInstance().document("/users/$uid").set(user)"
